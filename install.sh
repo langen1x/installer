@@ -424,7 +424,7 @@ configure_token() {
   fi
 }
 
-postinstall_check() {
+mondoo_postinstall_check() {
   detect_mondoo
   if [ $MONDOO_INSTALLED = false ]; then
     red "Mondoo installation failed (can't find the Mondoo binary)."
@@ -434,7 +434,7 @@ postinstall_check() {
   echo "Mondoo installation completed."
 }
 
-finalize_setup() {
+mondoo_finalize_setup() {
 
   configure_token
 
@@ -485,7 +485,7 @@ fi
 if [ $MONDOO_INSTALLED = true ]; then
   purple_bold "\n* Mondoo is already installed. Updateing Mondoo..."
   mondoo_update
-  finalize_setup
+  mondoo_finalize_setup
   exit 0
 fi
 
@@ -496,5 +496,5 @@ fi
 purple_bold "\n* Installing Mondoo via $MONDOO_INSTALLER"
 mondoo_install
 
-postinstall_check
-finalize_setup
+mondoo_postinstall_check
+mondoo_finalize_setup
