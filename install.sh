@@ -225,16 +225,14 @@ configure_macos_installer() {
       brew tap mondoolabs/mondoo
 
       purple_bold "\n* Installing Mondoo via 'brew install'"
-      brew install mondoo
+      brew install mondoo || true
       purple_bold "\n* Installing Mondoo via 'brew install' completed"
-      return 0
     }
 
     mondoo_update() {
       purple_bold "\n* Upgrade Mondoo via 'brew upgrade'"
       brew upgrade mondoo
       purple_bold "\n* Upgrade Mondoo via 'brew upgrade' completed"
-      return 0
     }
 
   else
