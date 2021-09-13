@@ -226,11 +226,13 @@ configure_macos_installer() {
 
       purple_bold "\n* Installing Mondoo via 'brew install'"
       brew install mondoo
+      purple_bold "\n* Installing Mondoo via 'brew install' completed"
     }
 
     mondoo_update() {
       purple_bold "\n* Upgrade Mondoo via 'brew upgrade'"
       brew upgrade mondoo
+      purple_bold "\n* Upgrade Mondoo via 'brew upgrade' completed"
     }
 
   else
