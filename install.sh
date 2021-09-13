@@ -222,17 +222,19 @@ configure_macos_installer() {
     MONDOO_INSTALLER="brew"
     mondoo_install() {
       purple_bold "\n* Configuring brew sources for Mondoo via 'brew tap'"
-      brew tap mondoolabs/mondoo 2>/dev/null
+      brew tap mondoolabs/mondoo
 
       purple_bold "\n* Installing Mondoo via 'brew install'"
-      brew install mondoo 2>/dev/null
+      brew install mondoo
       purple_bold "\n* Installing Mondoo via 'brew install' completed"
+      return 0
     }
 
     mondoo_update() {
       purple_bold "\n* Upgrade Mondoo via 'brew upgrade'"
-      brew upgrade mondoo 2>/dev/null
+      brew upgrade mondoo
       purple_bold "\n* Upgrade Mondoo via 'brew upgrade' completed"
+      return 0
     }
 
   else
