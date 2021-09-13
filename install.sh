@@ -495,6 +495,6 @@ if [ -z "${MONDOO_INSTALLER}" ]; then
 fi
 purple_bold "\n* Installing Mondoo via $MONDOO_INSTALLER"
 mondoo_install
-
 mondoo_postinstall_check
 mondoo_finalize_setup
+purple_bold "\n* Installation script completed"
