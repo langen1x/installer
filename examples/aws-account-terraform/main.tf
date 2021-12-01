@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 0.15"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 3.50.0"
+    }
+  }
+}
+
 provider "aws" {
   region = var.region
 }
@@ -16,12 +27,15 @@ module "secure_baseline" {
   aws_account_id                  = data.aws_caller_identity.current.account_id
   region                          = var.region
   support_iam_role_principal_arns = [aws_iam_user.admin.arn]
+  target_regions                  = ["us-east-2"]
 
   # Setting it to true means all audit logs are automatically deleted
-  # when you run `terraform destroy`.
+  #   when you run `terraform destroy`.
   # Note that it might be inappropriate for highly secured environment.
   audit_log_bucket_force_destroy = true
 
+  # This module only configure regions specified in target_regions argument though,
+  # all providers still need to be passed to the module.
   providers = {
     aws                = aws
     aws.ap-northeast-1 = aws.ap-northeast-1
@@ -43,3 +57,5 @@ module "secure_baseline" {
     aws.us-west-2      = aws.us-west-2
   }
 }
+
+  
