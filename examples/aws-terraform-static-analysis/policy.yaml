@@ -1,0 +1,89 @@
+owner_mrn: //policy.api.mondoo.app
+policies:
+  - uid: terraform-aws-security
+    name: Terraform Static Analysis Policy for AWS (Early Access)
+    version: 1.0.0
+    specs:
+      - title: Amazon Elastic Compute Cloud (Amazon EC2)
+        asset_filter:
+          query: platform.name == "terraform"
+        scoring_queries:
+          terraform-aws-security-ec2-ebs-encryption-by-default:
+          terraform-aws-security-ec2-imdsv2:
+          terraform-aws-security-ec2-user-data-no-secrets:
+      - title: Amazon Simple Storage Service (Amazon S3)
+        asset_filter:
+          query: platform.name == "terraform"
+        scoring_queries:
+          terraform-aws-security-s3-bucket-versioning-enabled:
+          terraform-aws-security-s3-bucket-logging-enabled:
+          terraform-aws-security-s3-bucket-level-public-access-prohibited:
+          terraform-aws-security-s3-bucket-server-side-encryption-enabled:
+queries:
+  - uid: terraform-aws-security-ec2-ebs-encryption-by-default
+    title: Ensure that Amazon Elastic Block Store (EBS) encryption is enabled by default
+    query: |
+      terraform.resources.where( nameLabel == "aws_ebs_volume").all(arguments["encrypted"] == true) ||
+      terraform.resources.one( nameLabel == "aws_ebs_encryption_by_default" && arguments["enabled"] == true )
+  - uid: terraform-aws-security-ec2-imdsv2
+    title: Ensure Instance Metadata Service Version 2 (IMDSv2) with session authentication tokens is active
+    query: |
+      terraform.resources.where( nameLabel  == "aws_instance") {
+        blocks.one(type == "metadata_options")
+        blocks.where(type == "metadata_options") {
+          arguments["http_tokens"] == "required" || arguments["http_endpoint"] == "disabled"
+        }
+      }
+  - uid: terraform-aws-security-ec2-user-data-no-secrets
+    title: Ensure EC2 instance user data does not contain secrets
+    query: |
+      terraform.resources.where( nameLabel  == "aws_instance" && arguments["user_data"] != null ) {
+        # ensure that all used AWS_ACCESS_KEY_ID are the sample key
+        arguments["user_data"] {
+          _.find(/(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}/).all("AKIAIOSFODNN7EXAMPLE")
+        }
+
+        # ensure taht all used secret kets are the sample key
+        arguments["user_data"] {
+          _.find(/([A-Za-z0-9\\\/+\\]{40})/).all( "wJalrXUtnFEMI/A1AAAAA/bPxRfiCYAAAAAAAKEY")
+        }
+      }
+  - uid: terraform-aws-security-s3-bucket-versioning-enabled
+    title: Ensure that versioning is enabled for your S3 buckets
+    query: |
+      terraform.resources.where( nameLabel == 'aws_s3_bucket') {
+        blocks.one( type == 'versioning')
+        blocks.where(type == 'versioning') {
+          arguments['enabled'] == true
+        }
+      }
+  - uid: terraform-aws-security-s3-bucket-logging-enabled
+    title: Ensure logging is enabled for your S3 buckets.
+    query: |
+      terraform.resources.where( nameLabel == 'aws_s3_bucket') {
+        blocks.one( type == 'logging')
+        blocks.where(type == 'logging') {
+          arguments['target_bucket'] != null
+        }
+      }
+  - uid: terraform-aws-security-s3-bucket-level-public-access-prohibited
+    title: Ensure Amazon Simple Storage Service (Amazon S3) buckets are not publicly accessible
+    query: |
+      terraform.resources.where( nameLabel == 'aws_s3_bucket_public_access_block') {
+        arguments["block_public_acls"] == true
+        arguments["block_public_policy"] == true
+        arguments["ignore_public_acls"] == true
+        arguments["restrict_public_buckets"] == true
+      }
+  - uid: terraform-aws-security-s3-bucket-server-side-encryption-enabled
+    title: Ensure that Amazon S3 bucket has the Amazon S3 default encryption enabled
+    query: |
+      terraform.resources.where( nameLabel == 'aws_s3_bucket') {
+        blocks.one( _.type == 'rule' && _.blocks.one(type == 'apply_server_side_encryption_by_default'))
+      }
+  - uid: terraform-aws-security-s3-bucket-public-read-and-write-prohibited
+    title: Ensure Amazon S3 buckets do not allow public read access
+    query: |
+      terraform.resources.where( nameLabel == 'aws_s3_bucket') {
+         arguments['acl'] != /public-read/
+      }
