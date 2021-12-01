@@ -67,7 +67,7 @@ PLAY RECAP *********************************************************************
 Mondoo leverages the ansible inventory. It can also be executed via ansible, see [Mondoo Docs](https://docs.mondoo.io/operating_systems/automation/ansible/) for further options.
 
 ```bash
-$ ansible-inventory -i hosts.ini --list | mondoo scan --incognito ../shared/policies/linux-baseline.yaml
+$ ansible-inventory -i hosts.ini --list | mondoo scan --incognito ../mql-policies/linux-baseline.yaml
 → Mondoo 5.15.0 (Space: "//captain.api.mondoo.app/spaces/musing-saha-952142", Service Account: "1zDY7cJ7bA84JxxNBWDxBdui2xE", Managed Client: "1zDY7auR20SgrFfiGUT5qZWx6mE")
 → loaded configuration from /Users/chris/.config/mondoo/mondoo.yml using source default
                         .-.            
