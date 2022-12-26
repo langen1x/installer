@@ -5,8 +5,7 @@ on:
   push:
     branches:
       - master
-    paths:
-      - '**.ps1'
+      - sign-test
 
 jobs:
   sign_scripts:
